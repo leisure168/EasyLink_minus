@@ -3,10 +3,10 @@
  */
 package com.mxchip.easylink_plus;
 
-import android.content.Context;
-import android.util.Log;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import android.content.Context;
 
 /**
  * @author Perry

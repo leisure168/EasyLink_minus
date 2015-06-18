@@ -14,20 +14,14 @@ import android.net.wifi.WifiManager;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.mxchip.helper.Crc8Code;
-import com.mxchip.helper.ProbeReqData;
-import com.mxchip.helper.RC4;
-
 /**
  * Created by wangchao on 6/9/15.
  */
 public class EasyLink_minus {
 	private static final String TAG = "EasyLink_minus";
-	// private static final String ARC4_KEY = "mxchip_easylink_minus";
 	private Thread mCallbackThread; // call start ap after wifi enabled
 	private Context mContext;
 	boolean mStopTransmitting = false;
-	// private ArrayList mSSid;
 	private IntentFilter mIntentFilter = null;
 	private boolean mScanning;
 	private int mErrorId = 0;
@@ -79,9 +73,6 @@ public class EasyLink_minus {
 
 	private List<Integer> mNetId = new ArrayList<Integer>();
 
-	// private List<String> mNetSsid = new ArrayList<String>();
-	// private int mChannel;
-
 	public EasyLink_minus(Context ctx, Thread t) {
 		this(ctx);
 		mCallbackThread = t;
@@ -95,25 +86,6 @@ public class EasyLink_minus {
 		mIntentFilter.addAction("android.net.wifi.STATE_CHANGE");
 		mContext.registerReceiver(this.mReceiver, this.mIntentFilter);
 	}
-
-	// private int ieee80211_frequency_to_channel(int paramInt) {
-	// if (paramInt == 2484)
-	// return 14;
-	// if (paramInt < 2484)
-	// return (paramInt - 2407) / 5;
-	// return -1000 + paramInt / 5;
-	// }
-
-	// private int getAndroidSDKVersion() {
-	// try {
-	// int i = Integer.valueOf(Build.VERSION.SDK_INT).intValue();
-	// return i;
-	// } catch (NumberFormatException localNumberFormatException) {
-	// Log.e(localNumberFormatException.toString(),
-	// localNumberFormatException.getMessage());
-	// }
-	// return 0;
-	// }
 
 	private void clearNetList() {
 		WifiManager localWifiManager = (WifiManager) mContext
@@ -137,12 +109,9 @@ public class EasyLink_minus {
 	private boolean startTransmit(String Ssid, String Key, String Userinfo) {
 		Log.d(TAG, new String(Ssid));
 		// clearNetList();
-		// if(Ssid == "") {return false;}
 		mIsWorking = true;
 		mStopTransmitting = false;
 		String param = "#" + Userinfo + Ssid + "@" + Key;
-
-		// String param = new ProbeReqData().bgProtocol(Userinfo, Ssid, Key);
 
 		WifiManager localWifiManager = (WifiManager) mContext
 				.getSystemService(Context.WIFI_SERVICE);
@@ -152,28 +121,10 @@ public class EasyLink_minus {
 			if (!localWifiManager.setWifiEnabled(true)) {
 				return false;
 			}
-			// while (!localWifiManager.isWifiEnabled()) {
-			// try {
-			// Thread.sleep(10L);
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
-			// }
-			// }
 		}
 		WifiInfo localWifiInfo = localWifiManager.getConnectionInfo();
 		if (localWifiInfo == null)
 			return false;
-		// List<ScanResult> results = localWifiManager.getScanResults();
-		// for (ScanResult result : results) {
-		// if (String.format("\"%s\"", new Object[] { Ssid }).equals(
-		// result.SSID)) {
-		// continue;
-		// }
-		// if (mChannel > 14)
-		// continue;
-		// mChannel = ieee80211_frequency_to_channel(result.frequency);
-		// break;
-		// }
 		WifiConfiguration config = new WifiConfiguration();
 		config.SSID = String.format("\"%s\"", new Object[] { param });
 		config.BSSID = null;
@@ -201,7 +152,6 @@ public class EasyLink_minus {
 				mNetId.add(cfg.networkId);
 			}
 		}
-		// Log.e("---netIds---", "SSID = " + config.SSID);
 		sendProbeRequest(localWifiManager, mNetId);
 		return true;
 	}
