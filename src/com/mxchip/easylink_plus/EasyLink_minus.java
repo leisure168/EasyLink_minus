@@ -1,32 +1,21 @@
 package com.mxchip.easylink_plus;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.mxchip.helper.Crc8Code;
-import com.mxchip.helper.RC4;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.CursorJoiner.Result;
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Parcelable;
 import android.util.Log;
+
+import com.mxchip.helper.Crc8Code;
+import com.mxchip.helper.RC4;
 
 /**
  * Created by wangchao on 6/9/15.
@@ -37,7 +26,7 @@ public class EasyLink_minus {
 	private Thread mCallbackThread; // call start ap after wifi enabled
 	private Context mContext;
 	boolean mStopTransmitting = false;
-	private ArrayList mSSid;
+	// private ArrayList mSSid;
 	private IntentFilter mIntentFilter = null;
 	private boolean mScanning;
 	private int mErrorId = 0;
@@ -88,8 +77,9 @@ public class EasyLink_minus {
 	};
 
 	private List<Integer> mNetId = new ArrayList<Integer>();
-	private List<String> mNetSsid = new ArrayList<String>();
-	private int mChannel;
+
+	// private List<String> mNetSsid = new ArrayList<String>();
+	// private int mChannel;
 
 	public EasyLink_minus(Context ctx, Thread t) {
 		this(ctx);
@@ -105,24 +95,24 @@ public class EasyLink_minus {
 		mContext.registerReceiver(this.mReceiver, this.mIntentFilter);
 	}
 
-	private int ieee80211_frequency_to_channel(int paramInt) {
-		if (paramInt == 2484)
-			return 14;
-		if (paramInt < 2484)
-			return (paramInt - 2407) / 5;
-		return -1000 + paramInt / 5;
-	}
+	// private int ieee80211_frequency_to_channel(int paramInt) {
+	// if (paramInt == 2484)
+	// return 14;
+	// if (paramInt < 2484)
+	// return (paramInt - 2407) / 5;
+	// return -1000 + paramInt / 5;
+	// }
 
-	private int getAndroidSDKVersion() {
-		try {
-			int i = Integer.valueOf(Build.VERSION.SDK_INT).intValue();
-			return i;
-		} catch (NumberFormatException localNumberFormatException) {
-			Log.e(localNumberFormatException.toString(),
-					localNumberFormatException.getMessage());
-		}
-		return 0;
-	}
+	// private int getAndroidSDKVersion() {
+	// try {
+	// int i = Integer.valueOf(Build.VERSION.SDK_INT).intValue();
+	// return i;
+	// } catch (NumberFormatException localNumberFormatException) {
+	// Log.e(localNumberFormatException.toString(),
+	// localNumberFormatException.getMessage());
+	// }
+	// return 0;
+	// }
 
 	private void clearNetList() {
 		WifiManager localWifiManager = (WifiManager) mContext
@@ -145,7 +135,7 @@ public class EasyLink_minus {
 
 	private boolean startTransmit(String Ssid, String Key, String Userinfo) {
 		Log.d(TAG, new String(Ssid));
-		 clearNetList();
+		// clearNetList();
 		// if(Ssid == "") {return false;}
 		mIsWorking = true;
 		mStopTransmitting = false;
@@ -172,17 +162,17 @@ public class EasyLink_minus {
 		WifiInfo localWifiInfo = localWifiManager.getConnectionInfo();
 		if (localWifiInfo == null)
 			return false;
-		List<ScanResult> results = localWifiManager.getScanResults();
-//		for (ScanResult result : results) {
-//			if (String.format("\"%s\"", new Object[] { Ssid }).equals(
-//					result.SSID)) {
-//				continue;
-//			}
-//			if (mChannel > 14)
-//				continue;
-//			mChannel = ieee80211_frequency_to_channel(result.frequency);
-//			break;
-//		}
+		// List<ScanResult> results = localWifiManager.getScanResults();
+		// for (ScanResult result : results) {
+		// if (String.format("\"%s\"", new Object[] { Ssid }).equals(
+		// result.SSID)) {
+		// continue;
+		// }
+		// if (mChannel > 14)
+		// continue;
+		// mChannel = ieee80211_frequency_to_channel(result.frequency);
+		// break;
+		// }
 		WifiConfiguration config = new WifiConfiguration();
 		config.SSID = String.format("\"%s\"", new Object[] { param });
 		config.BSSID = null;
@@ -271,66 +261,68 @@ public class EasyLink_minus {
 	// 处理数据格式
 	private String ProbeReqData(String userinfo, String ssid, String key) {
 		byte[] byteSSID = new byte[2];
-		
+
 		byteSSID[0] = (byte) 0x01; //
-		
+
 		int version = 0x01;
-		byteSSID[1] = (byte) (version<<4); //
-		
-//		byte [] origin = {0x8E, 0x99, 0x80, 0x12, 0x13, 0x34, 0x45, 0x56, 0x78};
-		
-//		Cipher cip;
-//		try {
-//			cip = Cipher.getInstance("RC4");
-//			SecretKeySpec k = new SecretKeySpec(ARC4_KEY.getBytes(), "RC4");
-//			cip.init(Cipher.ENCRYPT_MODE, k);
-//			byte [] r = cip.doFinal("abc".getBytes());
-//			byte[] r = new RC4(ARC4_KEY.getBytes()).encrypt("012".getBytes());
-//			byte[] t = new RC4(ARC4_KEY.getBytes()).decrypt(r);
-//			String txt = new String(t);
-//			String h = bytesToHex(r);
-//			Log.d(TAG, h);
-//		} catch (Exception e) {
-//		}
-		
-		byte [] tmpSsidAndKey = new byte[1 + ssid.getBytes().length + key.getBytes().length];
+		byteSSID[1] = (byte) (version << 4); //
+
+		// byte [] origin = {0x8E, 0x99, 0x80, 0x12, 0x13, 0x34, 0x45, 0x56,
+		// 0x78};
+
+		// Cipher cip;
+		// try {
+		// cip = Cipher.getInstance("RC4");
+		// SecretKeySpec k = new SecretKeySpec(ARC4_KEY.getBytes(), "RC4");
+		// cip.init(Cipher.ENCRYPT_MODE, k);
+		// byte [] r = cip.doFinal("abc".getBytes());
+		// byte[] r = new RC4(ARC4_KEY.getBytes()).encrypt("012".getBytes());
+		// byte[] t = new RC4(ARC4_KEY.getBytes()).decrypt(r);
+		// String txt = new String(t);
+		// String h = bytesToHex(r);
+		// Log.d(TAG, h);
+		// } catch (Exception e) {
+		// }
+
+		byte[] tmpSsidAndKey = new byte[1 + ssid.getBytes().length
+				+ key.getBytes().length];
 		tmpSsidAndKey[0] = (byte) ssid.length();
-		int i=1;
-		for(byte b : ssid.getBytes()) {
+		int i = 1;
+		for (byte b : ssid.getBytes()) {
 			tmpSsidAndKey[i++] = b;
 		}
-		for(byte b : key.getBytes()) {
+		for (byte b : key.getBytes()) {
 			tmpSsidAndKey[i++] = b;
 		}
 
 		byte[] data = new RC4(ARC4_KEY.getBytes()).encrypt(tmpSsidAndKey);
 		byte[] tdata = transfer(data);
-		if(tdata.length > 30) {
+		if (tdata.length > 30) {
 			Log.e(TAG, "version 1 not support long ssid and key");
 			return null;
 		}
-		
+
 		byte byteCrc8 = Crc8Code.calcCrc8(tdata);
 		byteSSID[1] |= byteCrc8 & 0x0f;
-		
-		byte[] result = new byte[2+tdata.length];
+
+		byte[] result = new byte[2 + tdata.length];
 		result[0] = byteSSID[0];
 		result[1] = byteSSID[1];
-		for(int j=0; j<tdata.length; j++) {
-			result[j+2] = tdata[j];
+		for (int j = 0; j < tdata.length; j++) {
+			result[j + 2] = tdata[j];
 		}
 		Log.e(TAG, "tmpSsidAndKey:" + byteSSID.toString());
 
 		return new String(result);
 	}
-	
+
 	byte[] transfer(byte[] data_in) {
 		int len_in = data_in.length;
-		byte[] data_out = new byte[len_in*2];
-		int i, j=0, k;
+		byte[] data_out = new byte[len_in * 2];
+		int i, j = 0, k;
 		byte tmp;
-		
-		for(i=0;i<len_in;i++) {
+
+		for (i = 0; i < len_in; i++) {
 			tmp = (byte) (data_in[i] & 0x7F);
 			if (tmp == 0x7E) {
 				data_out[j++] = 0x7E;
@@ -341,24 +333,24 @@ public class EasyLink_minus {
 			} else {
 				data_out[j++] = tmp;
 			}
-			if (((i % 7) == 6) || (i==len_in-1)) {
-			  tmp = 0;
-				for(k=0;k<7;k++) {
-					tmp += ((data_in[i-(6-k)] & 0x80) >> (7- k));
+			if (((i % 7) == 6) || (i == len_in - 1)) {
+				tmp = 0;
+				for (k = 0; k < 7; k++) {
+					tmp += ((data_in[i - (6 - k)] & 0x80) >> (7 - k));
 				}
 				if (tmp == 0x7E) {
-				  data_out[j++] = 0x7E;
-				  data_out[j++] = 0x01;
-			  } else if (tmp == 0) {
-				  data_out[j++] = 0x7E;
-				  data_out[j++] = 0x02;
-			  } else {
-				  data_out[j++] = tmp;
-			  }
+					data_out[j++] = 0x7E;
+					data_out[j++] = 0x01;
+				} else if (tmp == 0) {
+					data_out[j++] = 0x7E;
+					data_out[j++] = 0x02;
+				} else {
+					data_out[j++] = tmp;
+				}
 			}
 		}
 		byte[] result = new byte[j];
-		for(i=0; i<j; i++) {
+		for (i = 0; i < j; i++) {
 			result[i] = data_out[i];
 		}
 		return result;
@@ -368,7 +360,7 @@ public class EasyLink_minus {
 		if (hexString == null || hexString.equals("")) {
 			return null;
 		}
-		hexString = hexString.toUpperCase();
+		// hexString = hexString.toUpperCase();
 		int length = hexString.length() / 2;
 		char[] hexChars = hexString.toCharArray();
 		byte[] d = new byte[length];
@@ -389,14 +381,16 @@ public class EasyLink_minus {
 	public static byte charToByte(char c) {
 		return (byte) "0123456789ABCDEF".indexOf(c);
 	}
+
 	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
 	public static String bytesToHex(byte[] bytes) {
-	    char[] hexChars = new char[bytes.length * 2];
-	    for ( int j = 0; j < bytes.length; j++ ) {
-	        int v = bytes[j] & 0xFF;
-	        hexChars[j * 2] = hexArray[v >>> 4];
-	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-	    }
-	    return new String(hexChars);
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
 	}
 }
