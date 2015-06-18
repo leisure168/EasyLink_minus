@@ -3,6 +3,8 @@ package com.mxchip.easylink_plus;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mxchip.helper.ProbeReqData;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -112,6 +114,7 @@ public class EasyLink_minus {
 		mIsWorking = true;
 		mStopTransmitting = false;
 		String param = "#" + Userinfo + Ssid + "@" + Key;
+		// String param = new ProbeReqData().bgProtocol(Ssid, Key);
 
 		WifiManager localWifiManager = (WifiManager) mContext
 				.getSystemService(Context.WIFI_SERVICE);
