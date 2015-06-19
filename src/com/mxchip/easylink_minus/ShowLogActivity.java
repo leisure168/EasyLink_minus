@@ -3,13 +3,10 @@ package com.mxchip.easylink_minus;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mxchip.helper.ProbeReqData;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
@@ -17,12 +14,16 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mxchip.helper.ProbeReqData;
+
 public class ShowLogActivity extends Activity {
 	private Context ctx;
 	private TextView wifi_ssid;
 	private TextView wifi_psw;
 	public TextView configinfoid;
 	private IntentFilter mIntentFilter = null;
+	private boolean swiTag = true;
+	private Thread nth;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +33,37 @@ public class ShowLogActivity extends Activity {
 
 		wifi_ssid = (TextView) findViewById(R.id.wifi_ssid);
 		wifi_psw = (TextView) findViewById(R.id.wifi_psw);
+		Button cleanwifiid = (Button) findViewById(R.id.cleanwifiid);
 		Button sendbtnid = (Button) findViewById(R.id.sendbtnid);
 		Button stopsendbtnid = (Button) findViewById(R.id.stopsendbtnid);
 		configinfoid = (TextView) findViewById(R.id.configinfoid);
+
+		cleanwifiid.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				clearNetList();
+			}
+		});
 
 		sendbtnid.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				swiTag = true;
 				EasyLink_minus(ctx);
-				String Userinfo = "?1234"; // faked ip
+				final String Userinfo = "?1234"; // faked ip
 				startTransmit(wifi_ssid.getText().toString().trim(), wifi_psw
 						.getText().toString().trim(), Userinfo);
 			}
+		});
 
+		stopsendbtnid.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				swiTag = false;
+			}
 		});
 	}
 
@@ -66,15 +84,15 @@ public class ShowLogActivity extends Activity {
 		for (byte bt : param[0].getBytes()) {
 			valstr += ((int) bt) + " ";
 		}
-		valstr +="\r\nSSID: ";
+		valstr += "\r\nSSID: ";
 		for (byte bt : param[1].getBytes()) {
 			valstr += ((int) bt) + " ";
 		}
 		configinfoid.setText(valstr);
 
-		WifiManager localWifiManager = (WifiManager) ctx
+		final WifiManager localWifiManager = (WifiManager) ctx
 				.getSystemService(Context.WIFI_SERVICE);
-		WifiInfo localWifiInfo = localWifiManager.getConnectionInfo();
+		// WifiInfo localWifiInfo = localWifiManager.getConnectionInfo();
 		WifiConfiguration config = new WifiConfiguration();
 		config.SSID = String.format("\"%s\"", new Object[] { param[1] });
 		config.BSSID = null;
@@ -102,10 +120,47 @@ public class ShowLogActivity extends Activity {
 				mNetId.add(cfg.networkId);
 			}
 		}
-		for (int netId : mNetId) {
-			localWifiManager.disableNetwork(netId);
-			localWifiManager.enableNetwork(netId, false);
-			localWifiManager.startScan();
+
+		nth = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (swiTag) {
+					for (int netId : mNetId) {
+						localWifiManager.disableNetwork(netId);
+						localWifiManager.enableNetwork(netId, false);
+						localWifiManager.startScan();
+					}
+					try {
+						Thread.sleep(200L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		nth.start();
+	}
+
+	private void clearNetList() {
+		WifiManager localWifiManager = (WifiManager) ctx
+				.getSystemService(Context.WIFI_SERVICE);
+		if (localWifiManager == null
+				|| localWifiManager.getConfiguredNetworks() == null) {
+			return;
+		}
+		for (WifiConfiguration localWifiConfiguration : localWifiManager
+				.getConfiguredNetworks()) {
+			String ssid = localWifiConfiguration.SSID.replaceAll("\"", "");
+
+			for (byte bt : ssid.getBytes()) {
+				if (bt == 1) {
+					localWifiManager
+							.removeNetwork(localWifiConfiguration.networkId);
+					localWifiManager.saveConfiguration();
+				}
+			}
+			// if (!ssid.contains("#?1234"))
+			// continue;
 		}
 	}
 }

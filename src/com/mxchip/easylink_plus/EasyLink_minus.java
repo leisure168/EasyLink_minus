@@ -3,8 +3,6 @@ package com.mxchip.easylink_plus;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mxchip.helper.ProbeReqData;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +13,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Parcelable;
 import android.util.Log;
+
+import com.mxchip.helper.ProbeReqData;
 
 /**
  * Created by wangchao on 6/9/15.
