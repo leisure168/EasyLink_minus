@@ -43,7 +43,8 @@ public class EasyLink_plus {
 				while (sending) {
 					try {
 						minus.transmitSettings(ssid, key);
-						// if(true) break;
+						if (true)
+							break;
 						// Log.e("minus--->", "sending");
 						try {
 							Thread.sleep(500L);

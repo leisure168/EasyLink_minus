@@ -1,7 +1,5 @@
 package com.mxchip.easylink_minus;
 
-import com.mxchip.easylink_plus.EasyLink_plus;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -10,11 +8,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mxchip.easylink_plus.EasyLink_plus;
+
 public class MainActivity extends Activity {
 	private Context ctx;
 	private TextView wifi_ssid;
 	private TextView wifi_psw;
 	private EasyLink_plus minus;
+	public TextView configinfoid;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,9 @@ public class MainActivity extends Activity {
 		wifi_psw = (TextView) findViewById(R.id.wifi_psw);
 		Button sendbtnid = (Button) findViewById(R.id.sendbtnid);
 		Button stopsendbtnid = (Button) findViewById(R.id.stopsendbtnid);
+		configinfoid = (TextView) findViewById(R.id.configinfoid);
+//		configinfoid.setText("");
+		
 		minus = EasyLink_plus.getInstence(ctx);
 
 		sendbtnid.setOnClickListener(new OnClickListener() {

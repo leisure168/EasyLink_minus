@@ -8,7 +8,7 @@
         android:id="@+id/wifi_ssid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ROCKE"
+        android:text="mxchip"
         android:ems="10" >
 
         <requestFocus />
@@ -18,7 +18,7 @@
         android:id="@+id/wifi_psw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="DDD777"
+        android:text="12345678"
         android:ems="10" />
 
     <LinearLayout
@@ -44,6 +44,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.43"
-        android:text="TextView" />
-
+        android:text="Logs" />
 </LinearLayout>
