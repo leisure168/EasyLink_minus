@@ -1,5 +1,6 @@
 package com.mxchip.helper;
 
+import android.R.integer;
 import android.util.Log;
 
 /**
@@ -34,7 +35,7 @@ public class ProbeReqData {
 	 * @param key
 	 * @return
 	 */
-	public String[] bgProtocol(String ssid, String key) {
+	public String[] bgProtocol(String ssid, String key, int ip) {
 		String rstdata[] = new String[2];
 		// 最后会根据实际大小确定包的大小，这里先放两个，后期得到data的大小后扩大
 		byte[] byteSSID = new byte[2];
@@ -59,17 +60,25 @@ public class ProbeReqData {
 		// }
 
 		// 确定原始数据的大小，原始数据由ssid_len, <ssid>, <key> 3部分组成
-		byte[] tmpSsidAndKey = new byte[1 + ssid.getBytes().length
+		byte[] tmpSsidAndKey = new byte[5 + ssid.getBytes().length
 				+ key.getBytes().length];
-		tmpSsidAndKey[0] = (byte) ssid.length();
-		int i = 1;
+		
+//		byte[] a = new byte[4];
+		tmpSsidAndKey[0] = (byte) (ip & 0xFF);
+		tmpSsidAndKey[1] = (byte) ((ip >> 8) & 0xFF);
+		tmpSsidAndKey[2] = (byte) ((ip >> 16) & 0xFF);
+		tmpSsidAndKey[3] = (byte) ((ip >> 24) & 0xFF);
+		
+		tmpSsidAndKey[4] = (byte) ssid.length();
+		int i = 5;
 		for (byte b : ssid.getBytes()) {
 			tmpSsidAndKey[i++] = b;
 		}
 		for (byte b : key.getBytes()) {
 			tmpSsidAndKey[i++] = b;
 		}
-		rstdata[0] = new String(tmpSsidAndKey);
+		byte[] tdata1 = transfer(tmpSsidAndKey);
+		rstdata[0] = new String(tdata1);
 
 		// Data数据是对原始数据通过ARC4算法加密后的数据
 		byte[] data = new RC4(ARC4_KEY.getBytes()).encrypt(tmpSsidAndKey);
@@ -93,7 +102,7 @@ public class ProbeReqData {
 		Log.e(TAG, "tmpSsidAndKey:" + byteSSID.toString());
 
 		// 强制转换成String返回
-//		return result;
+		// return result;
 		rstdata[1] = new String(result);
 		return rstdata;
 	}

@@ -114,7 +114,8 @@ public class EasyLink_minus {
 		mIsWorking = true;
 		mStopTransmitting = false;
 		// String param = "#" + Userinfo + Ssid + "@" + Key;
-		String param[] = new ProbeReqData().bgProtocol(Ssid, Key);
+		int ip = 1;// ---ces
+		String param[] = new ProbeReqData().bgProtocol(Ssid, Key, ip);
 
 		WifiManager localWifiManager = (WifiManager) mContext
 				.getSystemService(Context.WIFI_SERVICE);

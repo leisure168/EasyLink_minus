@@ -20,6 +20,12 @@
         android:layout_height="wrap_content"
         android:text="12345678"
         android:ems="10" />
+    <EditText
+        android:id="@+id/appip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="-1794987840"
+        android:ems="10" />
 
     <LinearLayout
         android:layout_width="wrap_content"
